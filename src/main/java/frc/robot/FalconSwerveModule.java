@@ -30,6 +30,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public void setDesiredState(SwerveModuleState state, boolean openLoop) {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
+        
         setDriveMPS(optimizedState, openLoop);
         setAngleDegrees(optimizedState);
     }
@@ -49,14 +50,15 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public void setAngleDegrees(SwerveModuleState state) {
         Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
-        double angleRadians = angle.getRadians();
+        double angleDegrees = angle.getDegrees();
 
         m_rotation.set(ControlMode.Position, 
         (360
         /
         (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
-        * 
-        angleRadians);
+        *
+        angleDegrees
+        );
 
         lastAngle = angle;
     }
