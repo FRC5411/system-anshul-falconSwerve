@@ -28,6 +28,7 @@ public class SwerveDrive {
         this.maxSpeed = maxSpeed;
     }
 
+    // Function use in teleop mode
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             kinematics.toSwerveModuleStates(
@@ -52,6 +53,7 @@ public class SwerveDrive {
         }
     }    
 
+    // Function use in autonomous mode
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeed);
         
@@ -61,7 +63,7 @@ public class SwerveDrive {
     }
 
     public void invertGyro(boolean invert) {
-        gyro.setYaw(-gyro.getYaw());
+        invertGyro = invert;
     }
 
     public Rotation2d getYaw() {

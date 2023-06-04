@@ -72,8 +72,7 @@ public class SwerveUtils {
     }
 
     public void updateOdometry() {
-        int i = 0;
-        while(i <= positions.length - 1) {
+        for(int i = 0; i <= positions.length - 1; i++) {
             double pos = modules[i].getDriveMeters() * modules[i].getAnshulFactor();
             positions[i] = new SwerveModulePosition(pos, modules[i].getAngleRads());
             i++;
