@@ -59,10 +59,10 @@ public class Swervesubsystem extends SubsystemBase {
       rLeftBack = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID);
       rRightBack = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID);
 
-      RightFrontEncoder = new WPI_CANCoder(0);
-      LeftFrontEncoder = new WPI_CANCoder(1);
-      RightBackEncoder = new WPI_CANCoder(2);
-      LeftBackEncoder = new WPI_CANCoder(3);
+      LeftFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FL_CANCODER_ID);
+      RightFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FR_CANCODER_ID);
+      LeftBackEncoder = new WPI_CANCoder(DRIVETRAIN.BL_CANCODER_ID);
+      RightBackEncoder = new WPI_CANCoder(DRIVETRAIN.BR_CANCODER_ID);
 
       gyro = new Pigeon2(0);
       gyro.setYaw(0);
