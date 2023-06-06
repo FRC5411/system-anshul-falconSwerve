@@ -99,15 +99,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public Rotation2d getAngleRads() {
         return 
-        new Rotation2d(
-            getEncoder().getAbsolutePosition() 
-            * 
-            (
-            (2 * Math.PI) 
-            / 
-            (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)
-            )
-        );
+        new Rotation2d(Math.toRadians(getEncoder().getAbsolutePosition()));
     }
 
     @Override
