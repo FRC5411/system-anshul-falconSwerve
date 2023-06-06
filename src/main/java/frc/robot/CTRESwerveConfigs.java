@@ -32,7 +32,7 @@ public class CTRESwerveConfigs {
         StatorCurrentLimitConfiguration AZIMUTH_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 20, 20, 0);
         motor.configFactoryDefault();
         motor.setInverted(TalonFXInvertType.CounterClockwise);
-        motor.setNeutralMode(NeutralMode.Coast); // The azimuths are on coast as that is what it was like on 364's code and may contribute to the rotation
+        motor.setNeutralMode(NeutralMode.Coast); // The azimuths are on coast as that is what it was like on 364's code and may contribute to solving the Azimuth's turning problem
         motor.configRemoteFeedbackFilter(position, 0);
         motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
         motor.configStatorCurrentLimit(AZIMUTH_CURRENT_LIMIT);

@@ -1,7 +1,5 @@
 package frc.robot.Libs;
-
 import com.ctre.phoenix.sensors.Pigeon2;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -9,17 +7,17 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class SwerveDrive {
+public class HolonomicDrive {
     private Pigeon2 gyro;
     private SwerveModuleInterface modules[];
     private SwerveDriveKinematics kinematics;
     private double maxSpeed;
     private boolean invertGyro;
 
-    public SwerveDrive(SwerveModuleInterface[] modules, Pigeon2 gyro,
+    public HolonomicDrive(SwerveModuleInterface[] modules, Pigeon2 gyro,
     SwerveDriveKinematics kinematics, double maxSpeed) {
-        invertGyro = false;
         this.gyro = gyro;
+        invertGyro = false;
 
         this.kinematics = kinematics;
 

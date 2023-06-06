@@ -9,6 +9,7 @@ import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.Timer;
@@ -26,9 +27,9 @@ public class SwerveUtils {
     public PIDConstants rotPID;
     public HashMap <String, Commands> eventMap;
     public Pigeon2 gyro;
-    public SwerveDrive drive;
+    public HolonomicDrive drive;
 
-    public SwerveUtils( PIDConstants tranPID, PIDConstants rotPID, SwerveDrive drive) {
+    public SwerveUtils( PIDConstants tranPID, PIDConstants rotPID, HolonomicDrive drive) {
         this.modules = drive.getModules();
         this.kinematics = drive.getKinematics();
 
@@ -103,4 +104,16 @@ public class SwerveUtils {
         return builder.fullAuto(trajectory);
     }
 
+    public static SwerveDriveKinematics createKinematics(double wheelBaseMeters, double trackWidthMeters) {
+        return new SwerveDriveKinematics(
+            new Translation2d(wheelBaseMeters/2, trackWidthMeters/2),
+            new Translation2d(wheelBaseMeters/2, -trackWidthMeters/2),
+            new Translation2d(-wheelBaseMeters/2, trackWidthMeters/2),
+            new Translation2d(-wheelBaseMeters/2, -trackWidthMeters/2)
+          );
+    }
+
+    public static SwerveDriveKinematics createSquareKinematics(double robotWidthMeters) {
+        return createKinematics(robotWidthMeters, robotWidthMeters);
+    }
 }

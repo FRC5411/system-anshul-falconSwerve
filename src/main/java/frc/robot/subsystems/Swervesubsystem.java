@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -14,24 +13,24 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FalconSwerveModule;
 import frc.robot.Constants.DRIVETRAIN;
-import frc.robot.Libs.SwerveDrive;
+import frc.robot.Libs.HolonomicDrive;
 import frc.robot.Libs.SwerveUtils;
 
 public class Swervesubsystem extends SubsystemBase {
-  private WPI_TalonFX RightFront;
-  private WPI_TalonFX LeftFront;
-  private WPI_TalonFX RightBack;
-  private WPI_TalonFX LeftBack;
+  private WPI_TalonFX FrontRight;
+  private WPI_TalonFX FrontLeft;
+  private WPI_TalonFX BackRight;
+  private WPI_TalonFX BackLeft;
 
-  private WPI_TalonFX rRightFront;
-  private WPI_TalonFX rLeftFront;
-  private WPI_TalonFX rRightBack;
-  private WPI_TalonFX rLeftBack;
+  private WPI_TalonFX rFrontRight;
+  private WPI_TalonFX rFrontLeft;
+  private WPI_TalonFX rBackRight;
+  private WPI_TalonFX rBackLeft;
 
-  private WPI_CANCoder RightFrontEncoder;
-  private WPI_CANCoder LeftFrontEncoder;
-  private WPI_CANCoder RightBackEncoder;
-  private WPI_CANCoder LeftBackEncoder;
+  private WPI_CANCoder FrontRightEncoder;
+  private WPI_CANCoder FrontLeftEncoder;
+  private WPI_CANCoder BackRightEncoder;
+  private WPI_CANCoder BackLeftEncoder;
 
   private FalconSwerveModule TopLeft;
   private FalconSwerveModule TopRight;
@@ -43,49 +42,44 @@ public class Swervesubsystem extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
 
-  private SwerveDrive swerveDrive;
+  private HolonomicDrive swerveDrive;
   private SwerveUtils swerveUtils;
 
   private boolean field;
 
   public Swervesubsystem() {
-      LeftFront = new WPI_TalonFX(DRIVETRAIN.FL_DRIVE_ID);
-      RightFront = new WPI_TalonFX(DRIVETRAIN.FR_DRIVE_ID);
-      LeftBack = new WPI_TalonFX(DRIVETRAIN.BL_DRIVE_ID);
-      RightBack = new WPI_TalonFX(DRIVETRAIN.BR_DRIVE_ID);
+      FrontLeft = new WPI_TalonFX(DRIVETRAIN.FL_DRIVE_ID);
+      FrontRight = new WPI_TalonFX(DRIVETRAIN.FR_DRIVE_ID);
+      BackLeft = new WPI_TalonFX(DRIVETRAIN.BL_DRIVE_ID);
+      BackRight = new WPI_TalonFX(DRIVETRAIN.BR_DRIVE_ID);
 
-      rLeftFront = new WPI_TalonFX(DRIVETRAIN.FL_AZIMUTH_ID);
-      rRightFront = new WPI_TalonFX(DRIVETRAIN.FR_AZIMUTH_ID);
-      rLeftBack = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID);
-      rRightBack = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID);
+      rFrontLeft = new WPI_TalonFX(DRIVETRAIN.FL_AZIMUTH_ID);
+      rFrontRight = new WPI_TalonFX(DRIVETRAIN.FR_AZIMUTH_ID);
+      rBackLeft = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID);
+      rBackRight = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID);
 
-      LeftFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FL_CANCODER_ID);
-      RightFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FR_CANCODER_ID);
-      LeftBackEncoder = new WPI_CANCoder(DRIVETRAIN.BL_CANCODER_ID);
-      RightBackEncoder = new WPI_CANCoder(DRIVETRAIN.BR_CANCODER_ID);
+      FrontLeftEncoder = new WPI_CANCoder(DRIVETRAIN.FL_CANCODER_ID);
+      FrontRightEncoder = new WPI_CANCoder(DRIVETRAIN.FR_CANCODER_ID);
+      BackLeftEncoder = new WPI_CANCoder(DRIVETRAIN.BL_CANCODER_ID);
+      BackRightEncoder = new WPI_CANCoder(DRIVETRAIN.BR_CANCODER_ID);
 
       gyro = new Pigeon2(0);
       gyro.setYaw(0);
 
-      TopLeft = new FalconSwerveModule(LeftFront, rLeftFront, 
-                LeftFrontEncoder, DRIVETRAIN.FL_ECODER_OFFSET);
-      TopRight = new FalconSwerveModule(RightFront, rRightFront, 
-                  RightFrontEncoder ,DRIVETRAIN.FR_ECODER_OFFSET);
-      BottomLeft = new FalconSwerveModule(LeftBack, rLeftBack, 
-                  LeftBackEncoder, DRIVETRAIN.BL_ECODER_OFFSET);
-      BottomRight = new FalconSwerveModule(RightBack, rRightBack, 
-                  RightBackEncoder, DRIVETRAIN.BR_ECODER_OFFSET);
+      TopLeft = new FalconSwerveModule(FrontLeft, rFrontLeft, 
+                FrontLeftEncoder, DRIVETRAIN.FL_ECODER_OFFSET);
+      TopRight = new FalconSwerveModule(FrontRight, rFrontRight, 
+                  FrontRightEncoder ,DRIVETRAIN.FR_ECODER_OFFSET);
+      BottomLeft = new FalconSwerveModule(BackLeft, rBackLeft, 
+                  BackLeftEncoder, DRIVETRAIN.BL_ECODER_OFFSET);
+      BottomRight = new FalconSwerveModule(BackRight, rBackRight, 
+                  BackRightEncoder, DRIVETRAIN.BR_ECODER_OFFSET);
 
-      kinematics = new SwerveDriveKinematics(
-        new Translation2d(DRIVETRAIN.ROBOT_WIDTH/2, DRIVETRAIN.ROBOT_WIDTH/2),
-        new Translation2d(DRIVETRAIN.ROBOT_WIDTH/2, -DRIVETRAIN.ROBOT_WIDTH/2),
-        new Translation2d(-DRIVETRAIN.ROBOT_WIDTH/2, DRIVETRAIN.ROBOT_WIDTH/2),
-        new Translation2d(-DRIVETRAIN.ROBOT_WIDTH/2, -DRIVETRAIN.ROBOT_WIDTH/2)
-      );
+      kinematics = SwerveUtils.createSquareKinematics(DRIVETRAIN.ROBOT_WIDTH);
 
       modules = new FalconSwerveModule[] {TopLeft, TopRight, BottomLeft, BottomRight};
 
-      swerveDrive = new SwerveDrive(
+      swerveDrive = new HolonomicDrive(
         modules, 
         gyro, 
         kinematics, 
@@ -107,14 +101,12 @@ public class Swervesubsystem extends SubsystemBase {
     swerveDrive.drive(translation, orientation, getField().getAsBoolean(), false);
   }
 
-  public void stop() {}
+  public void xLock() {
+    
+  }
 
   public Command getAuton() {
-    return swerveUtils.followPath("Holonomic path",
-                          new HashMap<String,Command>(),
-                          false,
-                          this
-                          );
+    return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), false, this);
   }
 
   public Command toggleField() {
@@ -130,7 +122,7 @@ public class Swervesubsystem extends SubsystemBase {
     swerveUtils.updateOdometry();
 
     for(int i = 0; i <= modules.length - 1; i++) {
-      SmartDashboard.putNumber("Module " + i + " Angle", modules[i].getAngleRads().getDegrees());
+      SmartDashboard.putNumber("Module " + i + " Degrees", modules[i].getAngleRads().getDegrees());
       SmartDashboard.putNumber("Module " + i + " Meters", modules[i].getDriveMeters());
       SmartDashboard.putNumber("Module " + i + " Velocity", modules[i].getDriveVelocity());
     }

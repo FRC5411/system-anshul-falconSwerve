@@ -1,6 +1,5 @@
 package frc.robot.Libs;
 import com.ctre.phoenix.sensors.CANCoder;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
