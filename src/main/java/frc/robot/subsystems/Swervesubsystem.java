@@ -1,3 +1,5 @@
+// Takes a lot of code from base falcon swerve of team 364
+
 package frc.robot.subsystems;
 import java.util.HashMap;
 import java.util.function.BooleanSupplier;
@@ -101,8 +103,9 @@ public class Swervesubsystem extends SubsystemBase {
     swerveDrive.drive(translation, orientation, getField().getAsBoolean(), false);
   }
 
+  // Not used
   public void xLock() {
-    
+    swerveDrive.xLock();
   }
 
   public Command getAuton() {
