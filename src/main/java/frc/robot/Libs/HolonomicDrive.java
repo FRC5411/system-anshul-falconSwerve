@@ -60,6 +60,18 @@ public class HolonomicDrive {
         }
     }
 
+    public void xLock() {
+        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
+        swerveModuleStates[0] = new SwerveModuleState(0, new Rotation2d(315));
+        swerveModuleStates[1] = new SwerveModuleState(0, new Rotation2d(45));
+        swerveModuleStates[2] = new SwerveModuleState(0, new Rotation2d(225));
+        swerveModuleStates[3] = new SwerveModuleState(0, new Rotation2d(135));
+
+        for(int i = 0; i < modules.length - 1; i++) {
+            modules[i].setDesiredState(swerveModuleStates[i], false);
+        }
+    }
+
     public void invertGyro(boolean invert) {
         invertGyro = invert;
     }

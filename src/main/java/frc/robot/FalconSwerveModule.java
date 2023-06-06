@@ -40,7 +40,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         double speed = state.speedMetersPerSecond;
 
         if (openLoop) {
-            m_speed.set(speed/ 5.4);
+            m_speed.set(speed / DRIVETRAIN.MAX_LINEAR_SPEED);
         } else {
             m_speed.set(ControlMode.Velocity, 
             Conversions.MPSToFalcon(speed, DRIVETRAIN.WHEEL_PERIMETER, DRIVETRAIN.DRIVE_GEAR_RATIO));
@@ -54,13 +54,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
         double angleDegrees = angle.getDegrees();
 
-        m_rotation.set(ControlMode.Position, 
-        (360
-        /
-        (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
-        *
-        angleDegrees
-        );
+        setDegrees(angleDegrees);
 
         lastAngle = angle;
     }
@@ -110,5 +104,15 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public void resetToZero() {
         m_speed.setSelectedSensorPosition(0);
+    }
+
+    public void setDegrees(double angleDegrees) {
+        m_rotation.set(ControlMode.Position, 
+        (360
+        /
+        (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
+        *
+        angleDegrees
+        );
     }
 }
