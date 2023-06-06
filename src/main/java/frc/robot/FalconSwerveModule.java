@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.robot.Libs.CTRESwerveConfigs;
 import frc.robot.Libs.Conversions;
 import frc.robot.Libs.SwerveModuleInterface;
 import frc.robot.Constants.*;
