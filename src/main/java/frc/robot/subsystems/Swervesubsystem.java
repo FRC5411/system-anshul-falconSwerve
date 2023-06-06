@@ -118,7 +118,7 @@ public class Swervesubsystem extends SubsystemBase {
   }
 
   public Command toggleField() {
-    return new InstantCommand(() -> field ^= field);
+    return new InstantCommand(() -> field = !field);
   }
 
   public BooleanSupplier getField() {

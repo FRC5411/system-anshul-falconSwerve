@@ -15,9 +15,9 @@ public class RobotContainer {
     m_SwerveSubsystem = new Swervesubsystem();
 
     m_SwerveSubsystem.setDefaultCommand(new SwerveCommand(
-      () -> -m_controller.getLeftY() * DRIVETRAIN.MAX_LINEAR_SPEED, 
-      () -> m_controller.getLeftX() * DRIVETRAIN.MAX_LINEAR_SPEED, 
-      () -> m_controller.getRightX() * DRIVETRAIN.MAX_ROTATION_SPEED, 
+      () -> deadzone(-m_controller.getLeftY()) * DRIVETRAIN.MAX_LINEAR_SPEED, 
+      () -> deadzone(m_controller.getLeftX()) * DRIVETRAIN.MAX_LINEAR_SPEED, 
+      () -> deadzone(m_controller.getRightX()) * DRIVETRAIN.MAX_ROTATION_SPEED, 
       m_SwerveSubsystem
       ));
 
@@ -30,5 +30,12 @@ public class RobotContainer {
 
   public Command getAutonCommand() {
     return m_SwerveSubsystem.getAuton();
+  }
+
+  public double deadzone(double x) {
+    if(Math.abs(x) <= 0.1) {
+       return 0;
+    }
+    return x;
   }
 }
