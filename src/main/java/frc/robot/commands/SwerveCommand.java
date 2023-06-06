@@ -1,6 +1,5 @@
 package frc.robot.commands;
 import frc.robot.subsystems.Swervesubsystem;
-//import frc.robot.subsystems.sim.Swervesubsystem;
 import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -25,7 +24,9 @@ public class SwerveCommand extends CommandBase {
 
   @Override
   public void execute() {
-    m_SwerveSubsystem.swerveDrive(m_x.getAsDouble(), m_y.getAsDouble(), m_z.getAsDouble());
+    m_SwerveSubsystem.swerveDrive(deadzone(m_x.getAsDouble()), 
+                                  deadzone(m_y.getAsDouble()), 
+                                  deadzone(m_z.getAsDouble()));
   }
 
   @Override
@@ -36,5 +37,12 @@ public class SwerveCommand extends CommandBase {
   @Override
   public boolean isFinished() {
     return false;
+  }
+
+  public double deadzone(double x) {
+    if(Math.abs(x) <= 0.1) {
+       return 0;
+    }
+    return x;
   }
 }

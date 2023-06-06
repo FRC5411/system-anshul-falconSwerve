@@ -11,6 +11,7 @@ import frc.robot.Constants.DRIVETRAIN;
 public class CTRESwerveConfigs {
 
     public static WPI_TalonFX configDrive(WPI_TalonFX driveMotor) {
+
         StatorCurrentLimitConfiguration DRIVE_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 60, 60, 0);
         driveMotor.configFactoryDefault();
         driveMotor.setInverted(TalonFXInvertType.CounterClockwise);
@@ -31,7 +32,7 @@ public class CTRESwerveConfigs {
         StatorCurrentLimitConfiguration AZIMUTH_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 20, 20, 0);
         motor.configFactoryDefault();
         motor.setInverted(TalonFXInvertType.CounterClockwise);
-        motor.setNeutralMode(NeutralMode.Brake);
+        motor.setNeutralMode(NeutralMode.Coast); // The azimuths are on coast as that is what it was like on 364's code and may contribute to the rotation
         motor.configRemoteFeedbackFilter(position, 0);
         motor.configSelectedFeedbackSensor(FeedbackDevice.RemoteSensor0);
         motor.configStatorCurrentLimit(AZIMUTH_CURRENT_LIMIT);
@@ -45,6 +46,7 @@ public class CTRESwerveConfigs {
       }
 
       public static CANCoder configPosition (CANCoder encoder, double offset) {
+
         encoder.configFactoryDefault();
         encoder.configMagnetOffset(offset);
         encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);

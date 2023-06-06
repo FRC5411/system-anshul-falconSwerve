@@ -8,7 +8,6 @@ import frc.robot.Libs.Conversions;
 import frc.robot.Libs.SwerveModuleInterface;
 import frc.robot.Constants.*;
 
-
 public class FalconSwerveModule implements SwerveModuleInterface {
     private WPI_TalonFX m_speed;
     private WPI_TalonFX m_rotation;
@@ -32,6 +31,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
         
         setDriveMPS(optimizedState, openLoop);
+
         setAngleDegrees(optimizedState);
     }
 
@@ -49,6 +49,8 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     @Override
     public void setAngleDegrees(SwerveModuleState state) {
+        //This line of code controls whether the swerve wheels go back 
+        //into their starting position when the joystick are not being used
         Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
         double angleDegrees = angle.getDegrees();
 
@@ -84,7 +86,9 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         *
         DRIVETRAIN.WHEEL_PERIMETER
         *
-        (m_speed.getSelectedSensorVelocity()/2048);
+        (m_speed.getSelectedSensorVelocity()/2048)
+        /
+        10;
     }
 
     @Override

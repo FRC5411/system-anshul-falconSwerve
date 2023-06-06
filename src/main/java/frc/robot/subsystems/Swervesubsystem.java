@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 import java.util.HashMap;
+import java.util.function.BooleanSupplier;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -47,15 +49,15 @@ public class Swervesubsystem extends SubsystemBase {
   private boolean field;
 
   public Swervesubsystem() {
-      LeftFront = new WPI_TalonFX(11);
-      RightFront = new WPI_TalonFX(12);
-      LeftBack = new WPI_TalonFX(13);
-      RightBack = new WPI_TalonFX(14);
+      LeftFront = new WPI_TalonFX(DRIVETRAIN.FL_DRIVE_ID);
+      RightFront = new WPI_TalonFX(DRIVETRAIN.FR_DRIVE_ID);
+      LeftBack = new WPI_TalonFX(DRIVETRAIN.BL_DRIVE_ID);
+      RightBack = new WPI_TalonFX(DRIVETRAIN.BR_DRIVE_ID);
 
-      rLeftFront = new WPI_TalonFX(21);
-      rRightFront = new WPI_TalonFX(22);
-      rLeftBack = new WPI_TalonFX(23);
-      rRightBack = new WPI_TalonFX(24);
+      rLeftFront = new WPI_TalonFX(DRIVETRAIN.FL_AZIMUTH_ID);
+      rRightFront = new WPI_TalonFX(DRIVETRAIN.FR_AZIMUTH_ID);
+      rLeftBack = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID);
+      rRightBack = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID);
 
       RightFrontEncoder = new WPI_CANCoder(0);
       LeftFrontEncoder = new WPI_CANCoder(1);
@@ -102,7 +104,7 @@ public class Swervesubsystem extends SubsystemBase {
   public void swerveDrive(double x_speed, double y_speed, double orientation) {
     Translation2d translation = new Translation2d(x_speed, y_speed);
 
-    swerveDrive.drive(translation, orientation, true, false);
+    swerveDrive.drive(translation, orientation, getField().getAsBoolean(), false);
   }
 
   public void stop() {}
@@ -116,7 +118,11 @@ public class Swervesubsystem extends SubsystemBase {
   }
 
   public Command toggleField() {
-    return new InstantCommand(() -> field = !field);
+    return new InstantCommand(() -> field ^= field);
+  }
+
+  public BooleanSupplier getField() {
+    return () -> field;
   }
 
   @Override
@@ -134,5 +140,4 @@ public class Swervesubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {}
-
 }
