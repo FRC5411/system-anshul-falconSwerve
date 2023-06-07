@@ -6,9 +6,13 @@ import com.ctre.phoenix.motorcontrol.TalonFXInvertType;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 import frc.robot.Constants.DRIVETRAIN;
 
-public class CTRESwerveConfigs {
+public class SwerveConfigs {
 
     public static WPI_TalonFX configDrive(WPI_TalonFX driveMotor) {
         StatorCurrentLimitConfiguration DRIVE_CURRENT_LIMIT = new StatorCurrentLimitConfiguration(true, 60, 60, 0);
@@ -53,4 +57,14 @@ public class CTRESwerveConfigs {
         return encoder;
       }
 
+      public static CANSparkMax NEO(CANSparkMax motor, int deviceID, boolean inverted) {
+        motor = new CANSparkMax(deviceID, MotorType.kBrushless);
+        motor.restoreFactoryDefaults();
+        motor.clearFaults();
+        motor.setSmartCurrentLimit(40);
+        motor.setSecondaryCurrentLimit(40);
+        motor.setIdleMode(IdleMode.kBrake);
+        motor.setInverted(inverted);
+        return motor;
+    }
 }

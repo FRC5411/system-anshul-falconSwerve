@@ -22,9 +22,9 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
         lastAngle = new Rotation2d();
 
-        CTRESwerveConfigs.configDrive(m_speed);
-        CTRESwerveConfigs.configPosition(rot_encoder, offset);
-        CTRESwerveConfigs.configAzimuth(m_rotation, rot_encoder);
+        SwerveConfigs.configDrive(m_speed);
+        SwerveConfigs.configPosition(rot_encoder, offset);
+        SwerveConfigs.configAzimuth(m_rotation, rot_encoder);
     }
 
     @Override
