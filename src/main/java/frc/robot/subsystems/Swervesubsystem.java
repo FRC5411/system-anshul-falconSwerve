@@ -94,7 +94,7 @@ public class Swervesubsystem extends SubsystemBase {
         swerveDrive
         );
 
-        field = false;
+      field = false;
   }
 
   public void swerveDrive(double x_speed, double y_speed, double orientation) {
@@ -130,7 +130,7 @@ public class Swervesubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Module " + i + " Velocity", modules[i].getDriveVelocity());
     }
 
-    SmartDashboard.putBoolean("Field", field);
+    SmartDashboard.putBoolean("Field Oriented", field);
   }
 
   @Override

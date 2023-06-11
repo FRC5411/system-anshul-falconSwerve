@@ -28,6 +28,7 @@ public class RobotContainer {
     m_controller.a().onTrue(m_SwerveSubsystem.toggleField());
   }
 
+  // This is only a swerve configuration, which is why we are not using an auton subsystem to manage the auton commands
   public Command getAutonCommand() {
     return m_SwerveSubsystem.getAuton();
   }

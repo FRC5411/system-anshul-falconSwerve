@@ -7,6 +7,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Libs.CTRESwerveConfigs;
 import frc.robot.Libs.Conversions;
 import frc.robot.Libs.SwerveModuleInterface;
+import frc.robot.Libs.SwerveUtils;
 import frc.robot.Constants.*;
 
 public class FalconSwerveModule implements SwerveModuleInterface {
@@ -29,7 +30,11 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     @Override
     public void setDesiredState(SwerveModuleState state, boolean openLoop) {
-        SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
+        // This optimization method from WPI doesn't account for the 180 degree flip in the azimuth
+        // And is the reason we decided to not use the regualr internal falcon controller
+        //SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
+
+        SwerveModuleState optimizedState = SwerveUtils.optimizeModule(state, getEncoder().getAbsolutePosition());
         
         setDriveMPS(optimizedState, openLoop);
 
