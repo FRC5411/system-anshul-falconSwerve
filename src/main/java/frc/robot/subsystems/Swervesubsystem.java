@@ -109,7 +109,7 @@ public class Swervesubsystem extends SubsystemBase {
   }
 
   public Command getAuton() {
-    return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), false, this);
+    return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), true, this);
   }
 
   public Command toggleField() {
@@ -125,11 +125,7 @@ public class Swervesubsystem extends SubsystemBase {
     swerveUtils.updateOdometry();
 
     for(int i = 0; i <= modules.length - 1; i++) {
-      SmartDashboard.putNumber("Module " + i + " Degrees", modules[i].getAngleRads().getDegrees());
-      SmartDashboard.putNumber("Module " + i + " Meters", modules[i].getDriveMeters());
-      SmartDashboard.putNumber("Module " + i + " Velocity", modules[i].getDriveVelocity());
-      SmartDashboard.putNumber("Module " + i + " Degrees Setpoint", modules[i].getState().angle.getDegrees());
-      SmartDashboard.putNumber("Module " + i + " Meters Setpoint", modules[i].getState().speedMetersPerSecond);
+      modules[i].setTelemetry(i);
     }
 
     SmartDashboard.putBoolean("Field Oriented", field);
