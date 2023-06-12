@@ -7,7 +7,6 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -15,9 +14,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -145,22 +142,5 @@ public class SwerveUtils {
 
     public static SwerveDriveKinematics createSquareKinematics(double robotWidthMeters) {
         return createKinematics(robotWidthMeters, robotWidthMeters);
-    }
-
-    // My in progress module potimization
-    public static SwerveModuleState optimizeModule(SwerveModuleState state, double measure) {
-        double actPosition = state.angle.getDegrees();
-        double error = MathUtil.inputModulus(actPosition - measure, 0, 360);
-        double position = actPosition + error;
-
-        SmartDashboard.putNumber("Actual Pos", actPosition);
-        SmartDashboard.putNumber("Error", error);
-        SmartDashboard.putNumber("Position", position);
-
-        if(actPosition + 180 == position || actPosition - 180 == position) {
-            return new SwerveModuleState(-state.speedMetersPerSecond, new Rotation2d(Math.toRadians(position)));
-        }
-
-        return new SwerveModuleState(state.speedMetersPerSecond, new Rotation2d(Math.toRadians(position)));
     }
 }

@@ -128,6 +128,8 @@ public class Swervesubsystem extends SubsystemBase {
       SmartDashboard.putNumber("Module " + i + " Degrees", modules[i].getAngleRads().getDegrees());
       SmartDashboard.putNumber("Module " + i + " Meters", modules[i].getDriveMeters());
       SmartDashboard.putNumber("Module " + i + " Velocity", modules[i].getDriveVelocity());
+      SmartDashboard.putNumber("Module " + i + " Degrees Setpoint", modules[i].getState().angle.getDegrees());
+      SmartDashboard.putNumber("Module " + i + " Meters Setpoint", modules[i].getState().speedMetersPerSecond);
     }
 
     SmartDashboard.putBoolean("Field Oriented", field);

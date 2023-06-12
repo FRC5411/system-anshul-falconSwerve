@@ -7,13 +7,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import frc.robot.Libs.CTRESwerveConfigs;
 import frc.robot.Libs.Conversions;
 import frc.robot.Libs.SwerveModuleInterface;
-import frc.robot.Libs.SwerveUtils;
 import frc.robot.Constants.*;
 
 public class FalconSwerveModule implements SwerveModuleInterface {
     private WPI_TalonFX m_speed;
     private WPI_TalonFX m_rotation;
     private WPI_CANCoder rot_encoder;
+    private SwerveModuleState debugState;
     private Rotation2d lastAngle;
 
     public FalconSwerveModule(WPI_TalonFX speed, WPI_TalonFX rotation, WPI_CANCoder encoder, double offset) {
@@ -26,19 +26,21 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         CTRESwerveConfigs.configDrive(m_speed);
         CTRESwerveConfigs.configPosition(rot_encoder, offset);
         CTRESwerveConfigs.configAzimuth(m_rotation, rot_encoder);
+
+        debugState = new SwerveModuleState();
     }
 
     @Override
     public void setDesiredState(SwerveModuleState state, boolean openLoop) {
         // This optimization method from WPI doesn't account for the 180 degree flip in the azimuth
         // And is the reason we decided to not use the regualr internal falcon controller
-        //SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
-
-        SwerveModuleState optimizedState = SwerveUtils.optimizeModule(state, getEncoder().getAbsolutePosition());
+        SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
         
         setDriveMPS(optimizedState, openLoop);
 
         setAngleDegrees(optimizedState);
+
+        debugState = optimizedState;
     }
 
     @Override
@@ -120,5 +122,9 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         *
         angleDegrees
         );
+    }
+
+    public SwerveModuleState getState() {
+        return debugState;
     }
 }
