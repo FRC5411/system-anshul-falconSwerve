@@ -1,5 +1,6 @@
 package frc.robot;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DRIVETRAIN;
 import frc.robot.commands.SwerveCommand;
@@ -26,6 +27,7 @@ public class RobotContainer {
 
   private void configureButtonBindings() {
     m_controller.a().onTrue(m_SwerveSubsystem.toggleField());
+    m_controller.x().onTrue(new InstantCommand(() -> m_SwerveSubsystem.xLock(), m_SwerveSubsystem));
   }
 
   // This is only a swerve configuration, which is why we are not using an auton subsystem to manage the auton commands

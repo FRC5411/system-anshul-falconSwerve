@@ -105,7 +105,9 @@ public class Swervesubsystem extends SubsystemBase {
     swerveDrive.drive(translation, orientation, true, false);
   }
 
-  public void stop() {}
+  public void xLock() {
+    swerveDrive.xLock();
+  }
 
   public Command getAuton() {
     return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), true, this);

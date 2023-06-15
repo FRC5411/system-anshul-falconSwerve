@@ -29,9 +29,7 @@ public class SwerveCommand extends CommandBase {
   }
 
   @Override
-  public void end(boolean interrupted) {
-    m_SwerveSubsystem.stop();
-  }
+  public void end(boolean interrupted) {}
 
   @Override
   public boolean isFinished() {
