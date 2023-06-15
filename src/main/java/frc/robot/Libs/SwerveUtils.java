@@ -6,6 +6,8 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,7 +30,9 @@ public class SwerveUtils {
     public Pigeon2 gyro;
     public SwerveDrive drive;
 
-    public SwerveUtils( PIDConstants tranPID, PIDConstants rotPID, SwerveDrive drive) {
+
+    // Utiliites class can do many swerve features, mainly pathplanner and odometry
+    public SwerveUtils( PIDConstants tranPID, PIDConstants rotPID, HolonomicDrive drive ) {
         this.modules = drive.getModules();
         this.kinematics = drive.getKinematics();
 
@@ -53,6 +57,7 @@ public class SwerveUtils {
         return Rotation2d.fromDegrees(gyro.getYaw());
     }
 
+    // Creates a swerve drive pose estimator at 0,0 Pathplanner should set the pose after this and has done so in simulation
     public SwerveDrivePoseEstimator createOdometry() {
         return new SwerveDrivePoseEstimator(
             kinematics,
@@ -66,11 +71,8 @@ public class SwerveUtils {
         odometry.resetPosition(getRotation2d(), positions, pose);
     }
 
-    public void updateOdometry(Pose2d vision) {
-        odometry.addVisionMeasurement(vision, Timer.getFPGATimestamp());
-        updateOdometry();
-    }
 
+    // No need for input pulls straignt from passed in odules
     public void updateOdometry() {
         for(int i = 0; i <= positions.length - 1; i++) {
             double pos = modules[i].getDriveMeters() * modules[i].getAnshulFactor();
@@ -80,12 +82,19 @@ public class SwerveUtils {
         odometry.update(getRotation2d(), positions);
     }
 
+    // For use with vision, remember to have an if condition to only run when an apriltag is visible
+    public void updateOdometry(Pose2d vision) {
+        odometry.addVisionMeasurement(vision, Timer.getFPGATimestamp());
+        updateOdometry();
+    }
+
     public Pose2d getPose() {
         return odometry.getEstimatedPosition();
     }
 
+    // For following generated non - inline paths
     public Command followPath(String path, HashMap<String, Command> eventMap, 
-                                boolean isRed, Subsystem requirements) {
+                                boolean isBlue, Subsystem requirements) {
 
         List<PathPlannerTrajectory> trajectory = PathPlanner.loadPathGroup(path, PathPlanner.getConstraintsFromPath(path));
 
@@ -97,10 +106,40 @@ public class SwerveUtils {
             rotPID,
             drive::setModuleStates,
             eventMap,
-            isRed,
+            isBlue,
             requirements);
 
         return builder.fullAuto(trajectory);
     }
 
+    // For use with april tag alignment or such endeavors
+    // Most use sequantial commands and such since you can't have event markers on generated paths
+    public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isBlue, Subsystem requirements) {
+        return 
+            new PPSwerveControllerCommand(
+                traj, 
+                this::getPose, 
+                kinematics,
+                new PIDController(tranPID.kP, tranPID.kI, tranPID.kD), 
+                new PIDController(tranPID.kP, tranPID.kI, tranPID.kD),
+                new PIDController(rotPID.kP, rotPID.kI, rotPID.kD),
+                drive::setModuleStates,
+                isBlue,
+                requirements
+             );
+     }
+
+    // Creates swerve drive kinematics based of the wheel base and track width
+    public static SwerveDriveKinematics createKinematics(double wheelBaseMeters, double trackWidthMeters) {
+        return new SwerveDriveKinematics(
+            new Translation2d(wheelBaseMeters/2, trackWidthMeters/2),
+            new Translation2d(wheelBaseMeters/2, -trackWidthMeters/2),
+            new Translation2d(-wheelBaseMeters/2, trackWidthMeters/2),
+            new Translation2d(-wheelBaseMeters/2, -trackWidthMeters/2)
+          );
+    }
+
+    public static SwerveDriveKinematics createSquareKinematics(double robotWidthMeters) {
+        return createKinematics(robotWidthMeters, robotWidthMeters);
+    }
 }

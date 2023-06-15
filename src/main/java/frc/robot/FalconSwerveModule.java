@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Libs.CTRESwerveConfigs;
 import frc.robot.Libs.Conversions;
 import frc.robot.Libs.SwerveModuleInterface;
@@ -14,6 +15,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     private WPI_TalonFX m_speed;
     private WPI_TalonFX m_rotation;
     private WPI_CANCoder rot_encoder;
+    private SwerveModuleState debugState;
     private Rotation2d lastAngle;
 
     public FalconSwerveModule(WPI_TalonFX speed, WPI_TalonFX rotation, WPI_CANCoder encoder, double offset) {
@@ -26,14 +28,20 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         CTRESwerveConfigs.configDrive(m_speed);
         CTRESwerveConfigs.configPosition(rot_encoder, offset);
         CTRESwerveConfigs.configAzimuth(m_rotation, rot_encoder);
+
+        debugState = new SwerveModuleState();
     }
 
     @Override
     public void setDesiredState(SwerveModuleState state, boolean openLoop) {
+        // This optimization method from WPI doesn't account for the 180 degree flip in the azimuth
+        // And is the reason we decided to not use the regualr internal falcon controller
         SwerveModuleState optimizedState = SwerveModuleState.optimize(state, getAngleRads());
         
         setDriveMPS(optimizedState, openLoop);
         setAngleDegrees(optimizedState);
+
+        debugState = optimizedState;
     }
 
     @Override
@@ -50,6 +58,8 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     @Override
     public void setAngleDegrees(SwerveModuleState state) {
+        //This line of code controls whether the swerve wheels go back 
+        //into their starting position when the joystick are not being used, made by 364
         Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
         double angleDegrees = angle.getDegrees();
 
@@ -115,5 +125,26 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public void resetToZero() {
         m_speed.setSelectedSensorPosition(0);
+    }
+
+    public void setDegrees(double angleDegrees) {
+        m_rotation.set(ControlMode.Position, 
+        (360
+        /
+        (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
+        *
+        angleDegrees
+        );
+    }
+
+    public SwerveModuleState getState() {
+        return debugState;
+    }
+    public void setTelemetry(int i) {
+        SmartDashboard.putNumber("Module " + i + " Degrees", getAngleRads().getDegrees());
+        SmartDashboard.putNumber("Module " + i + " Meters", getDriveMeters());
+        SmartDashboard.putNumber("Module " + i + " Velocity", getDriveVelocity());
+        SmartDashboard.putNumber("Module " + i + " Degrees Setpoint", getState().angle.getDegrees());
+        SmartDashboard.putNumber("Module " + i + " Meters Setpoint", getState().speedMetersPerSecond);
     }
 }

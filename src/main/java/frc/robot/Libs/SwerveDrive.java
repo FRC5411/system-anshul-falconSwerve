@@ -16,7 +16,10 @@ public class SwerveDrive {
     private double maxSpeed;
     private boolean invertGyro;
 
-    public SwerveDrive(SwerveModuleInterface[] modules, Pigeon2 gyro,
+    // Constructs a holonomic(Swerve) drive using my swerve module interface, gyro, kinematics and choosen max speed
+    // Works similar to Differential drive class from wpilib, I named it Holonomic drive to sound more interesting than swerve
+    // Does not work with mecanum drive newbies
+    public HolonomicDrive(SwerveModuleInterface[] modules, Pigeon2 gyro,
     SwerveDriveKinematics kinematics, double maxSpeed) {
         invertGyro = false;
         this.gyro = gyro;
@@ -29,6 +32,7 @@ public class SwerveDrive {
     }
 
     // Function use in teleop mode
+    // The math is directly copy pasted from 364's code as its been tested math wise and works
     public void drive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
         SwerveModuleState[] swerveModuleStates =
             kinematics.toSwerveModuleStates(
@@ -46,6 +50,7 @@ public class SwerveDrive {
 
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, maxSpeed);
 
+        // Debug info on the module goals in speed and degrees(Not optimized)
         for(int i = 0; i <= modules.length - 1; i++) {
             SmartDashboard.putNumber("Module " + i + " Angle", swerveModuleStates[i].angle.getDegrees());
             SmartDashboard.putNumber("Module " + i + " Speed", swerveModuleStates[i].speedMetersPerSecond);
@@ -62,14 +67,30 @@ public class SwerveDrive {
         }
     }
 
+    // Not used in 2023 season but nice to have for the future
+    public void xLock() {
+        SwerveModuleState[] swerveModuleStates = new SwerveModuleState[4];
+        swerveModuleStates[0] = new SwerveModuleState(0, new Rotation2d(315));
+        swerveModuleStates[1] = new SwerveModuleState(0, new Rotation2d(45));
+        swerveModuleStates[2] = new SwerveModuleState(0, new Rotation2d(225));
+        swerveModuleStates[3] = new SwerveModuleState(0, new Rotation2d(135));
+
+        for(int i = 0; i < modules.length - 1; i++) {
+            modules[i].setDesiredState(swerveModuleStates[i], false);
+        }
+    }
+
+    // Invert logic worked in sim
     public void invertGyro(boolean invert) {
         invertGyro = invert;
     }
 
+    // Not tested, but math wise should work
     public Rotation2d getYaw() {
         return invertGyro ? Rotation2d.fromDegrees(360 - gyro.getYaw()) : Rotation2d.fromDegrees(gyro.getYaw());
     }
 
+    // Get functions mainly for use with swerve utils
     public Pigeon2 getGyro() {
         return gyro;
     }
