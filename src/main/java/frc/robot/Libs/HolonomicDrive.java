@@ -9,7 +9,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class SwerveDrive {
+public class HolonomicDrive {
     private Pigeon2 gyro;
     private SwerveModuleInterface modules[];
     private SwerveDriveKinematics kinematics;

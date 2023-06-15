@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.FalconSwerveModule;
 import frc.robot.Constants.DRIVETRAIN;
-import frc.robot.Libs.SwerveDrive;
+import frc.robot.Libs.HolonomicDrive;
 import frc.robot.Libs.SwerveUtils;
 
 public class Swervesubsystem extends SubsystemBase {
@@ -41,7 +41,7 @@ public class Swervesubsystem extends SubsystemBase {
 
   private SwerveDriveKinematics kinematics;
 
-  private SwerveDrive swerveDrive;
+  private HolonomicDrive swerveDrive;
   private SwerveUtils swerveUtils;
 
   private boolean field;
@@ -83,7 +83,7 @@ public class Swervesubsystem extends SubsystemBase {
 
       modules = new FalconSwerveModule[] {TopLeft, TopRight, BottomLeft, BottomRight};
 
-      swerveDrive = new SwerveDrive(
+      swerveDrive = new HolonomicDrive(
         modules, 
         gyro, 
         kinematics, 
