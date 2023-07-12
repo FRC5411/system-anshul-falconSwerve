@@ -25,15 +25,15 @@ public class SwerveUtils {
     public SwerveModuleInterface[] modules;
     public SwerveModulePosition[] positions;
     public SwerveAutoBuilder builder;
-    public PIDConstants tranPID;
-    public PIDConstants rotPID;
+    public PIDController tranPID;
+    public PIDController rotPID;
     public HashMap <String, Commands> eventMap;
     public Pigeon2 gyro;
     public HolonomicDrive drive;
 
 
     // Utiliites class can do many swerve features, mainly pathplanner and odometry
-    public SwerveUtils( PIDConstants tranPID, PIDConstants rotPID, HolonomicDrive drive ) {
+    public SwerveUtils( PIDController tranPID, PIDController rotPID, HolonomicDrive drive ) {
         this.modules = drive.getModules();
         this.kinematics = drive.getKinematics();
 
@@ -99,12 +99,15 @@ public class SwerveUtils {
 
         List<PathPlannerTrajectory> trajectory = PathPlanner.loadPathGroup(path, PathPlanner.getConstraintsFromPath(path));
 
+        PIDConstants tPidConstants = new PIDConstants(tranPID.getP(), tranPID.getI(), tranPID.getD());
+        PIDConstants rPidConstants = new PIDConstants(rotPID.getP(), rotPID.getI(), rotPID.getD());
+
         SwerveAutoBuilder builder = new SwerveAutoBuilder(
             this::getPose,
             this::resetOdometry,
             kinematics,
-            tranPID,
-            rotPID,
+            tPidConstants,
+            rPidConstants,
             drive::setModuleStates,
             eventMap,
             isBlue,
@@ -121,9 +124,9 @@ public class SwerveUtils {
                 traj, 
                 this::getPose, 
                 kinematics,
-                new PIDController(tranPID.kP, tranPID.kI, tranPID.kD), 
-                new PIDController(tranPID.kP, tranPID.kI, tranPID.kD),
-                new PIDController(rotPID.kP, rotPID.kI, rotPID.kD),
+                tranPID, 
+                tranPID,
+                rotPID,
                 drive::setModuleStates,
                 isBlue,
                 requirements
@@ -142,5 +145,10 @@ public class SwerveUtils {
 
     public static SwerveDriveKinematics createSquareKinematics(double robotWidthMeters) {
         return createKinematics(robotWidthMeters, robotWidthMeters);
+    }
+
+    public void resetControllers() {
+        tranPID.reset();
+        rotPID.reset();
     }
 }
