@@ -63,13 +63,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
         double angleDegrees = angle.getDegrees();
 
-        m_rotation.set(ControlMode.Position, 
-        (360
-        /
-        (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
-        *
-        angleDegrees
-        );
+        setDegrees(angleDegrees);
 
         lastAngle = angle;
     }
@@ -81,21 +75,21 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     @Override
     public double getDriveMeters() {
-        return 
-        DRIVETRAIN.DRIVE_GEAR_RATIO 
-        *
-        DRIVETRAIN.WHEEL_PERIMETER
-        *
-        (m_speed.getSelectedSensorPosition()/2048);
+        return
+            DRIVETRAIN.WHEEL_PERIMETER
+            *
+            (m_speed.getSelectedSensorPosition()/2048)
+            / 
+            DRIVETRAIN.DRIVE_GEAR_RATIO;
     }
 
     public double getDriveVelocity() {
         return 
-        DRIVETRAIN.DRIVE_GEAR_RATIO 
-        *
-        DRIVETRAIN.WHEEL_PERIMETER
-        *
-        (m_speed.getSelectedSensorVelocity()/2048);
+            DRIVETRAIN.WHEEL_PERIMETER
+            *
+            (m_speed.getSelectedSensorVelocity()/2048)
+            /
+            DRIVETRAIN.DRIVE_GEAR_RATIO;
     }
 
     @Override
@@ -129,22 +123,18 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     public void setDegrees(double angleDegrees) {
         m_rotation.set(ControlMode.Position, 
-        (360
-        /
-        (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)) 
-        *
-        angleDegrees
-        );
+        Conversions.degreesToCANcoder(angleDegrees, DRIVETRAIN.DRIVE_GEAR_RATIO));
     }
 
     public SwerveModuleState getState() {
         return debugState;
     }
+
     public void setTelemetry(int i) {
         SmartDashboard.putNumber("Module " + i + " Degrees", getAngleRads().getDegrees());
         SmartDashboard.putNumber("Module " + i + " Meters", getDriveMeters());
         SmartDashboard.putNumber("Module " + i + " Velocity", getDriveVelocity());
         SmartDashboard.putNumber("Module " + i + " Degrees Setpoint", getState().angle.getDegrees());
-        SmartDashboard.putNumber("Module " + i + " Meters Setpoint", getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("Module " + i + " Velocity Setpoint", getState().speedMetersPerSecond);
     }
 }

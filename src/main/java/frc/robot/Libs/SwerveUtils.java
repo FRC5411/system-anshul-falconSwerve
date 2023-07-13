@@ -7,6 +7,7 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.PIDConstants;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,7 +15,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -30,7 +32,6 @@ public class SwerveUtils {
     public HashMap <String, Commands> eventMap;
     public Pigeon2 gyro;
     public HolonomicDrive drive;
-
 
     // Utiliites class can do many swerve features, mainly pathplanner and odometry
     public SwerveUtils( PIDController tranPID, PIDController rotPID, HolonomicDrive drive ) {
@@ -68,10 +69,13 @@ public class SwerveUtils {
         );
     }
 
+    public void setVisionVaritation(Matrix<N3, N1> stdDevs) {
+        odometry.setVisionMeasurementStdDevs(stdDevs);
+    }
+
     public void resetOdometry(Pose2d pose) {
         odometry.resetPosition(getRotation2d(), positions, pose);
     }
-
 
     // No need for input pulls straignt from passed in odules
     public void updateOdometry() {
@@ -84,9 +88,17 @@ public class SwerveUtils {
     }
 
     // For use with vision, remember to have an if condition to only run when an apriltag is visible
-    public void updateOdometry(Pose2d vision) {
-        odometry.addVisionMeasurement(vision, Timer.getFPGATimestamp());
+    public void updateOdometry(Pose2d vision, double timeStamp) {
+        odometry.addVisionMeasurement(vision, timeStamp);
         updateOdometry();
+    }
+
+    public void addVisionMeasurement (Pose2d vision, double timeStamp) {
+        odometry.addVisionMeasurement(vision, timeStamp);
+    }
+
+    public void addVisionMeasurement(Pose2d vision, double timeStamp, Matrix<N3, N1> covariance) {
+        odometry.addVisionMeasurement(vision, timeStamp, covariance);
     }
 
     public Pose2d getPose() {
@@ -130,7 +142,7 @@ public class SwerveUtils {
                 drive::setModuleStates,
                 isBlue,
                 requirements
-             );
+            );
      }
 
     // Creates swerve drive kinematics based of the wheel base and track width
@@ -140,7 +152,7 @@ public class SwerveUtils {
             new Translation2d(wheelBaseMeters/2, -trackWidthMeters/2),
             new Translation2d(-wheelBaseMeters/2, trackWidthMeters/2),
             new Translation2d(-wheelBaseMeters/2, -trackWidthMeters/2)
-          );
+        );
     }
 
     public static SwerveDriveKinematics createSquareKinematics(double robotWidthMeters) {

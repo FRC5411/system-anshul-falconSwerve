@@ -32,7 +32,6 @@ public class RobotContainer {
     m_controller.x().onTrue(new InstantCommand(() -> m_SwerveSubsystem.xLock(), m_SwerveSubsystem));
   }
 
-  // This is only a swerve configuration, which is why we are not using an auton subsystem to manage the auton commands
   public Command getAutonCommand() {
     return m_SwerveSubsystem.getAuton();
   }

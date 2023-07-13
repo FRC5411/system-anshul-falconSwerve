@@ -6,26 +6,29 @@ import java.util.List;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
-import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import frc.robot.FalconSwerveModule;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DRIVETRAIN;
 import frc.robot.Libs.HolonomicDrive;
+import frc.robot.Libs.Limelight;
 import frc.robot.Libs.SwerveUtils;
 
 public class Swervesubsystem extends SubsystemBase {
@@ -65,24 +68,29 @@ public class Swervesubsystem extends SubsystemBase {
   private PIDController tPID;
   private PIDController rPID;
 
+  private Limelight limelight;
+
   public Swervesubsystem() {
-      LeftFront = new WPI_TalonFX(11);
-      RightFront = new WPI_TalonFX(12);
-      LeftBack = new WPI_TalonFX(13);
-      RightBack = new WPI_TalonFX(14);
+      ///////////////// DEVICE INITIALIZATION \\\\\\\\\\\\\\\\\
+      LeftFront = new WPI_TalonFX(DRIVETRAIN.FL_DRIVE_ID, "drivetrain");
+      RightFront = new WPI_TalonFX(DRIVETRAIN.FR_DRIVE_ID, "drivetrain");
+      LeftBack = new WPI_TalonFX(DRIVETRAIN.BL_DRIVE_ID, "drivetrain");
+      RightBack = new WPI_TalonFX(DRIVETRAIN.BR_DRIVE_ID, "drivetrain");
 
-      rLeftFront = new WPI_TalonFX(21);
-      rRightFront = new WPI_TalonFX(22);
-      rLeftBack = new WPI_TalonFX(23);
-      rRightBack = new WPI_TalonFX(24);
+      rLeftFront = new WPI_TalonFX(DRIVETRAIN.FL_AZIMUTH_ID, "drivetrain");
+      rRightFront = new WPI_TalonFX(DRIVETRAIN.FR_AZIMUTH_ID, "drivetrain");
+      rLeftBack = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID, "drivetrain");
+      rRightBack = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID, "drivetrain");
 
-      RightFrontEncoder = new WPI_CANCoder(0);
-      LeftFrontEncoder = new WPI_CANCoder(1);
-      RightBackEncoder = new WPI_CANCoder(2);
-      LeftBackEncoder = new WPI_CANCoder(3);
+      RightFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FR_CANCODER_ID, "drivetrain");
+      LeftFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FL_CANCODER_ID, "drivetrain");
+      RightBackEncoder = new WPI_CANCoder(DRIVETRAIN.BR_CANCODER_ID, "drivetrain");
+      LeftBackEncoder = new WPI_CANCoder(DRIVETRAIN.BL_CANCODER_ID, "drivetrain");
 
-      gyro = new Pigeon2(0);
+      gyro = new Pigeon2(DRIVETRAIN.PIGEON_ID, "drivetrain");
       gyro.setYaw(0);
+
+      limelight = new Limelight("limelight", new Pose2d());
 
       TopLeft = new FalconSwerveModule(LeftFront, rLeftFront, 
                 LeftFrontEncoder, DRIVETRAIN.FL_ECODER_OFFSET);
@@ -93,6 +101,7 @@ public class Swervesubsystem extends SubsystemBase {
       BottomRight = new FalconSwerveModule(RightBack, rRightBack, 
                   RightBackEncoder, DRIVETRAIN.BR_ECODER_OFFSET);
 
+      ////// DRIVE INITIZALIZATION \\\\\\\
       kinematics = SwerveUtils.createSquareKinematics(DRIVETRAIN.ROBOT_WIDTH);
 
       modules = new FalconSwerveModule[] {TopLeft, TopRight, BottomLeft, BottomRight};
@@ -102,8 +111,11 @@ public class Swervesubsystem extends SubsystemBase {
         gyro, 
         kinematics, 
         DRIVETRAIN.MAX_LINEAR_SPEED
-        );
+      );
 
+      field = false;
+
+      ////// PATH PLANNER INITIALIZATION \\\\\\\
       tPID = new PIDController(DRIVETRAIN._translationKp, DRIVETRAIN._translationKi, DRIVETRAIN._translationKd);
         tPID.setTolerance(0);
         tPID.setIntegratorRange(-0, 0);
@@ -116,10 +128,11 @@ public class Swervesubsystem extends SubsystemBase {
         tPID,
         rPID,
         swerveDrive
-        );
+      );
 
-      field = false;
+      swerveUtils.setVisionVaritation(VecBuilder.fill(0.09, 0.09, Math.toRadians(180)));
 
+      ////// ALIGNMENT WAYPOINT INITIALIZATION \\\\\\\
     if (RobotContainer.getDriverAlliance() == DriverStation.Alliance.Red) {  
       _coneWaypoints.add(new Pose2d(0.76, 6.13, new Rotation2d(Math.PI)));
       _coneWaypoints.add(new Pose2d(0.76, 7.49, new Rotation2d(Math.PI)));
@@ -151,27 +164,26 @@ public class Swervesubsystem extends SubsystemBase {
     }
   }
 
+  ////// DRIVE FUNCTIONS \\\\\\\
   public void swerveDrive(double x_speed, double y_speed, double orientation) {
-    Translation2d translation = new Translation2d(x_speed, y_speed);
-
-    swerveDrive.drive(translation, orientation, true, false);
+    swerveDrive.drive(new Translation2d(x_speed, y_speed), orientation, field, false);
   }
 
   public void xLock() {
     swerveDrive.xLock();
   }
 
-  public Command getAuton() {
-    return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), true, this);
-  }
-
   public Command toggleField() {
     return new InstantCommand(() -> field = !field);
   }
 
+  ////// PERIODIC FUNCTIONS\\\\\\\
   @Override
   public void periodic() {
     swerveUtils.updateOdometry();
+    if(limelight.hastarget()) {swerveUtils.addVisionMeasurement(limelight.getPose(), 
+                               Timer.getFPGATimestamp() - limelight.getLatency());}
+    limelight.periodic();
 
     for(int i = 0; i <= modules.length - 1; i++) {
       modules[i].setTelemetry(i);
@@ -183,16 +195,9 @@ public class Swervesubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {}
 
-  public void resetOdometry(Pose2d pose) {
-    swerveUtils.resetOdometry(pose);
-  }
-
-  public void resetGyro() {
-    gyro.setYaw(0);
-  }
-
-  public Pose2d getOdometry() {
-    return swerveUtils.getPose();
+  ////// PATH PLANNER FUNCTIONS \\\\\\\
+  public Command getAuton() {
+    return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), true, this);
   }
 
   public Command PPmoveToPositionCommand (boolean wantCone) {  
@@ -205,39 +210,44 @@ public class Swervesubsystem extends SubsystemBase {
     swerveUtils.resetControllers();
 
     PathPlannerTrajectory _alignToTarget = PathPlanner.generatePath(
-      new PathConstraints(1, 0.5),
-      new PathPoint(new Translation2d(
-        getOdometry().getX(), 
-        getOdometry().getY()), 
+      DRIVETRAIN.alignConstraints,
+      new PathPoint(
+        getOdometry().getTranslation(), 
         new Rotation2d(Math.toRadians(gyro.getYaw()))),
 
       new PathPoint(
-        new Translation2d(
-          getOdometry().getX(), 
-          target.getY()), 
-          target.getRotation()
+        new Translation2d( getOdometry().getX(), target.getY()) , 
+        target.getRotation()
         )        
     );
 
     PathPlannerTrajectory _toTarget = PathPlanner.generatePath(
-      new PathConstraints(1, 0.5),
-      new PathPoint(
-        new Translation2d(
-          getOdometry().getX(), 
-          target.getY()), 
-          target.getRotation()),
+      DRIVETRAIN.alignConstraints,
+      new PathPoint( new Translation2d( getOdometry().getX(), target.getY() ), 
+      target.getRotation()),
 
       new PathPoint(
-        new Translation2d(
-          target.getX(), 
-          target.getY()), 
-          target.getRotation()
-        )
+        target.getTranslation(),
+        target.getRotation()
+      )
     );
 
     Command align = swerveUtils.followTrajectoryCommand(_alignToTarget, false, this);
     Command toGoal = swerveUtils.followTrajectoryCommand(_toTarget, false, this);
 
     return new SequentialCommandGroup(align, toGoal);
+  }
+
+  ///// ODOMETRY FUNCTIONS \\\\\\
+  public void resetOdometry(Pose2d pose) {
+    swerveUtils.resetOdometry(pose);
+  }
+
+  public void resetGyro() {
+    gyro.setYaw(0);
+  }
+
+  public Pose2d getOdometry() {
+    return swerveUtils.getPose();
   }
 }

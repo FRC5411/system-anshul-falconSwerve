@@ -1,7 +1,9 @@
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+
 public final class Constants {
-    public class DRIVETRAIN {
+    public static class DRIVETRAIN {
         // robot width (meters)
         public static final double ROBOT_WIDTH = 0.6858;
         // wheel diameter (meters)
@@ -35,9 +37,11 @@ public final class Constants {
         public static final double DRIVE_kF = 0.028998;//0.04//0.06; //0.028998
 
         // Factor to make odometry accurate
-        public static final double SCALE_FACTOR = 0.02;
+        public static final double SCALE_FACTOR = 0.02 * DRIVE_GEAR_RATIO;
 
         //Ids
+        public static final int PIGEON_ID = 3;
+
         public static final int FL_CANCODER_ID = 4;
         public static final int FR_CANCODER_ID = 5;
         public static final int BL_CANCODER_ID = 6;
@@ -59,5 +63,7 @@ public final class Constants {
         public static final double _rotationKp = 6.25;//12.5;//15;//0.00005
         public static final double _rotationKi = 0;
         public static final double _rotationKd = 0;
+
+        public static final PathConstraints alignConstraints = new PathConstraints(2, 1);
 }
 }
