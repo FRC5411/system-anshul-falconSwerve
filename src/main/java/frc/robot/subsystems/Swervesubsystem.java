@@ -2,7 +2,9 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import com.ctre.phoenix.sensors.Pigeon2;
@@ -38,12 +40,21 @@ public class Swervesubsystem extends SubsystemBase {
   private WPI_TalonFX RightBack;
   private WPI_TalonFX LeftBack;
 
+  private TalonFXSimCollection RightFrontSim;
+  private TalonFXSimCollection LeftFrontSim;
+  private TalonFXSimCollection RightBackSim;
+  private TalonFXSimCollection LeftBackSim;
+
   // Azimuths
   private WPI_TalonFX rRightFront;
   private WPI_TalonFX rLeftFront;
   private WPI_TalonFX rRightBack;
   private WPI_TalonFX rLeftBack;
 
+  private TalonFXSimCollection rRightFrontSim;
+  private TalonFXSimCollection rLeftFrontSim;
+  private TalonFXSimCollection rRightBackSim;
+  private TalonFXSimCollection rLeftBackSim;
   
   private WPI_CANCoder RightFrontEncoder;
   private WPI_CANCoder LeftFrontEncoder;
@@ -80,10 +91,20 @@ public class Swervesubsystem extends SubsystemBase {
       LeftBack = new WPI_TalonFX(DRIVETRAIN.BL_DRIVE_ID, "drivetrain");
       RightBack = new WPI_TalonFX(DRIVETRAIN.BR_DRIVE_ID, "drivetrain");
 
+      LeftFrontSim = new TalonFXSimCollection(LeftFront);
+      RightFrontSim = new TalonFXSimCollection(RightFront);
+      LeftBackSim = new TalonFXSimCollection(LeftBack);
+      RightBackSim = new TalonFXSimCollection(RightBack);
+
       rLeftFront = new WPI_TalonFX(DRIVETRAIN.FL_AZIMUTH_ID, "drivetrain");
       rRightFront = new WPI_TalonFX(DRIVETRAIN.FR_AZIMUTH_ID, "drivetrain");
       rLeftBack = new WPI_TalonFX(DRIVETRAIN.BL_AZIMUTH_ID, "drivetrain");
       rRightBack = new WPI_TalonFX(DRIVETRAIN.BR_AZIMUTH_ID, "drivetrain");
+
+      rLeftFrontSim = new TalonFXSimCollection(rLeftFront);
+      rRightFrontSim = new TalonFXSimCollection(rRightFront);
+      rLeftBackSim = new TalonFXSimCollection(rLeftBack);
+      rRightBackSim = new TalonFXSimCollection(rRightBack);
 
       RightFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FR_CANCODER_ID, "drivetrain");
       LeftFrontEncoder = new WPI_CANCoder(DRIVETRAIN.FL_CANCODER_ID, "drivetrain");
@@ -95,7 +116,7 @@ public class Swervesubsystem extends SubsystemBase {
 
       limelight = new Limelight("limelight", new Pose2d());
 
-      TopLeft = new FalconSwerveModule(LeftFront, rLeftFront, 
+      TopLeft = new FalconSwerveModule(LeftFront, rLeftFront,
                 LeftFrontEncoder, DRIVETRAIN.FL_ECODER_OFFSET);
       TopRight = new FalconSwerveModule(RightFront, rRightFront, 
                   RightFrontEncoder ,DRIVETRAIN.FR_ECODER_OFFSET);
@@ -198,6 +219,7 @@ public class Swervesubsystem extends SubsystemBase {
   @Override
   public void simulationPeriodic() {}
 
+
   ////// PATH PLANNER FUNCTIONS \\\\\\\
   public Command getAuton() {
     return swerveUtils.followPath("Holonomic path", new HashMap<String,Command>(), true, this);
@@ -252,5 +274,34 @@ public class Swervesubsystem extends SubsystemBase {
 
   public Pose2d getOdometry() {
     return swerveUtils.getPose();
+  }
+
+  ////// SIMULATOR VALUES \\\\\\\
+  public List<DoubleSupplier> getFL() {
+    DoubleSupplier driveLF = () -> LeftFrontSim.getMotorOutputLeadVoltage();
+    DoubleSupplier azimuthLF = () -> rLeftFrontSim.getMotorOutputLeadVoltage();
+
+    return List.of(driveLF, azimuthLF);
+  }
+
+  public List<DoubleSupplier> getFR() {
+    DoubleSupplier driveRF = () -> RightFrontSim.getMotorOutputLeadVoltage();
+    DoubleSupplier azimuthRF = () -> rRightFrontSim.getMotorOutputLeadVoltage();
+
+    return List.of(driveRF, azimuthRF);
+  }
+
+  public List<DoubleSupplier> getBL() {
+    DoubleSupplier driveLB = () -> LeftBackSim.getMotorOutputLeadVoltage();
+    DoubleSupplier azimuthLB = () -> rLeftBackSim.getMotorOutputLeadVoltage();
+
+    return List.of(driveLB, azimuthLB);
+  }
+
+  public List<DoubleSupplier> getBR() {
+    DoubleSupplier driveRB = () -> RightBackSim.getMotorOutputLeadVoltage();
+    DoubleSupplier azimuthRB = () -> rRightBackSim.getMotorOutputLeadVoltage();
+
+    return List.of(driveRB, azimuthRB);
   }
 }

@@ -1,10 +1,9 @@
 package frc.robot.subsystems;
-
 import java.util.List;
+import java.util.function.DoubleSupplier;
 
 import edu.wpi.first.math.system.plant.DCMotor;
 import frc.robot.Constants.DRIVETRAIN;
-import frc.robot.Libs.SwerveUtils;
 import frc.robot.subsystems.SwerveSim.QuadSwerveSim;
 import frc.robot.subsystems.SwerveSim.SwerveModuleSim;
 
@@ -17,6 +16,11 @@ public class SwerveSimManager {
     List<SwerveModuleSim> m_modules;
 
     QuadSwerveSim m_swerveSim;
+
+    List<DoubleSupplier> FL;
+    List<DoubleSupplier> FR;
+    List<DoubleSupplier> BL;
+    List<DoubleSupplier> BR;
 
     /*
         DCMotor azimuthMotor,
@@ -32,7 +36,7 @@ public class SwerveSimManager {
         double azimuthEffectiveMOI
     */
     
-    public SwerveSimManager() {
+    public SwerveSimManager(List<DoubleSupplier> FL, List<DoubleSupplier> FR, List<DoubleSupplier> BL, List<DoubleSupplier> BR) {
         m_frontLeftSim = new SwerveModuleSim(
             DCMotor.getFalcon500(1),
             DCMotor.getFalcon500(1),
@@ -98,7 +102,30 @@ public class SwerveSimManager {
             0.0,
             m_modules);
 
+        this.FL = FL;
+        this.FR = FR;
+        this.BL = BL;
+        this.BR = BR;
     }
 
+    public List<SwerveModuleSim> getModules() {
+        return m_modules;
+    }
 
+    public void update(double dt) {
+        m_frontLeftSim.setInputVoltages(FL.get(0).getAsDouble(), FL.get(1).getAsDouble());
+        m_frontRightSim.setInputVoltages(FR.get(0).getAsDouble(), FR.get(1).getAsDouble());
+        m_backLeftSim.setInputVoltages(BL.get(0).getAsDouble(), BL.get(1).getAsDouble());
+        m_backRightSim.setInputVoltages(BR.get(0).getAsDouble(), BR.get(1).getAsDouble());
+
+        m_swerveSim.update(dt);
+    }
+
+    public double getDriveEncoderPos(int module) {
+        return m_modules.get(module).getWheelEncoderPositionRev();
+    }
+
+    public double getAzimuthEncoderPos(int module) {
+        return m_modules.get(module).getAzimuthEncoderPositionRev();
+    }
 }

@@ -5,18 +5,25 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.DRIVETRAIN;
 import frc.robot.commands.SwerveCommand;
+import frc.robot.subsystems.SwerveSimManager;
 import frc.robot.subsystems.Swervesubsystem;
 
 public class RobotContainer {
-  private Swervesubsystem m_SwerveSubsystem;
   private CommandXboxController m_controller;
+  private Swervesubsystem m_SwerveSubsystem;
+  private SwerveSimManager m_SwerveSimManager;
 
   public RobotContainer() {
     m_controller = new CommandXboxController(0);
 
     m_SwerveSubsystem = new Swervesubsystem();
 
-    
+    m_SwerveSimManager = new SwerveSimManager(
+      m_SwerveSubsystem.getFL(),
+      m_SwerveSubsystem.getFR(),
+      m_SwerveSubsystem.getBL(),
+      m_SwerveSubsystem.getBR()
+    );
 
     m_SwerveSubsystem.setDefaultCommand(new SwerveCommand(
       () -> -m_controller.getLeftY() * DRIVETRAIN.MAX_LINEAR_SPEED, 
@@ -46,5 +53,9 @@ public class RobotContainer {
 
     // What to do for testing
     return DriverStation.Alliance.Red;
+  }
+
+  public SwerveSimManager getSwerveSimManager() {
+    return m_SwerveSimManager;
   }
 }

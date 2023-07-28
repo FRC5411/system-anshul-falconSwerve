@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
+  private double m_lastTime = 0;
 
   @Override
   public void robotInit() {
@@ -48,5 +49,8 @@ public class Robot extends TimedRobot {
   public void simulationInit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    m_robotContainer.getSwerveSimManager().update(0.001);
+    m_lastTime += 0.001;
+  }
 }
