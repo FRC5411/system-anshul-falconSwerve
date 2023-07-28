@@ -48,45 +48,45 @@ public class SwerveSimManager {
         );
 
         m_frontRightSim = new SwerveModuleSim(
-            null, 
-            null, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0
+            DCMotor.getFalcon500(1),
+            DCMotor.getFalcon500(1),
+            DRIVETRAIN.WHEEL_DIAMETER / 2.0, // wheelRadiusM
+            DRIVETRAIN.AZIMUTH_GEAR_RATIO, // azimuthGearRatio
+            DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
+            1.0, // azimuthEncGearRatio
+            1.0, // wheelEncGearRatio
+            0.0, // treadStaticCoefFric
+            0.0, // treadKineticCoefFric
+            1.0, // moduleNormalForce
+            0.0 // azimuthEffectiveMOI
         );
 
         m_backLeftSim = new SwerveModuleSim(
-            null,
-            null,
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0
+            DCMotor.getFalcon500(1),
+            DCMotor.getFalcon500(1),
+            DRIVETRAIN.WHEEL_DIAMETER / 2.0, // wheelRadiusM
+            DRIVETRAIN.AZIMUTH_GEAR_RATIO, // azimuthGearRatio
+            DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
+            1.0, // azimuthEncGearRatio
+            1.0, // wheelEncGearRatio
+            0.0, // treadStaticCoefFric
+            0.0, // treadKineticCoefFric
+            1.0, // moduleNormalForce
+            0.0 // azimuthEffectiveMOI
         );
 
         m_backRightSim = new SwerveModuleSim(
-            null, 
-            null, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0, 
-            0
+            DCMotor.getFalcon500(1),
+            DCMotor.getFalcon500(1),
+            DRIVETRAIN.WHEEL_DIAMETER / 2.0, // wheelRadiusM
+            DRIVETRAIN.AZIMUTH_GEAR_RATIO, // azimuthGearRatio
+            DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
+            1.0, // azimuthEncGearRatio
+            1.0, // wheelEncGearRatio
+            0.0, // treadStaticCoefFric
+            0.0, // treadKineticCoefFric
+            1.0, // moduleNormalForce
+            0.0 // azimuthEffectiveMOI
         );
         
         m_modules = List.of(m_frontLeftSim, m_frontRightSim, m_backLeftSim, m_backRightSim);
@@ -100,5 +100,5 @@ public class SwerveSimManager {
 
     }
 
-    
+
 }
