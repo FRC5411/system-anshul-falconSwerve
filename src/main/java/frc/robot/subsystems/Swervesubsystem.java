@@ -32,16 +32,19 @@ import frc.robot.Libs.Limelight;
 import frc.robot.Libs.SwerveUtils;
 
 public class Swervesubsystem extends SubsystemBase {
+  // Speed Motors
   private WPI_TalonFX RightFront;
   private WPI_TalonFX LeftFront;
   private WPI_TalonFX RightBack;
   private WPI_TalonFX LeftBack;
 
+  // Azimuths
   private WPI_TalonFX rRightFront;
   private WPI_TalonFX rLeftFront;
   private WPI_TalonFX rRightBack;
   private WPI_TalonFX rLeftBack;
 
+  
   private WPI_CANCoder RightFrontEncoder;
   private WPI_CANCoder LeftFrontEncoder;
   private WPI_CANCoder RightBackEncoder;

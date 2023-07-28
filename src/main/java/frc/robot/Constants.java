@@ -12,6 +12,9 @@ public final class Constants {
         // drive gear ratio
         public static final double DRIVE_GEAR_RATIO = 6.75;
 
+        // azimuth gear ratio
+        public static final double AZIMUTH_GEAR_RATIO = 4;
+
         // encoder offsets (degrees)
         public static final double FL_ECODER_OFFSET = -313.506+0.5;
         public static final double FR_ECODER_OFFSET = -69.082+0.5;
@@ -37,7 +40,7 @@ public final class Constants {
         public static final double DRIVE_kF = 0.028998;//0.04//0.06; //0.028998
 
         // Factor to make odometry accurate
-        public static final double SCALE_FACTOR = 0.02 * DRIVE_GEAR_RATIO;
+        public static final double SCALE_FACTOR = 0.02 * DRIVE_GEAR_RATIO * DRIVE_GEAR_RATIO;
 
         //Ids
         public static final int PIGEON_ID = 3;
