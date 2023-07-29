@@ -1,9 +1,10 @@
 package frc.robot.subsystems;
 import java.util.List;
 import java.util.function.DoubleSupplier;
-
 import edu.wpi.first.math.system.plant.DCMotor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DRIVETRAIN;
+import frc.robot.Libs.Conversions;
 import frc.robot.subsystems.SwerveSim.QuadSwerveSim;
 import frc.robot.subsystems.SwerveSim.SwerveModuleSim;
 
@@ -45,8 +46,8 @@ public class SwerveSimManager {
             DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
             1.0, // azimuthEncGearRatio
             1.0, // wheelEncGearRatio
-            0.0, // treadStaticCoefFric
-            0.0, // treadKineticCoefFric
+            1.0, // treadStaticCoefFric
+            1.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
             DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
@@ -59,8 +60,8 @@ public class SwerveSimManager {
             DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
             1.0, // azimuthEncGearRatio
             1.0, // wheelEncGearRatio
-            0.0, // treadStaticCoefFric
-            0.0, // treadKineticCoefFric
+            1.0, // treadStaticCoefFric
+            1.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
             DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
@@ -73,8 +74,8 @@ public class SwerveSimManager {
             DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
             1.0, // azimuthEncGearRatio
             1.0, // wheelEncGearRatio
-            0.0, // treadStaticCoefFric
-            0.0, // treadKineticCoefFric
+            1.0, // treadStaticCoefFric
+            1.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
             DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
@@ -86,9 +87,9 @@ public class SwerveSimManager {
             DRIVETRAIN.AZIMUTH_GEAR_RATIO, // azimuthGearRatio
             DRIVETRAIN.DRIVE_GEAR_RATIO, // wheelGearRatio
             1.0, // azimuthEncGearRatio
-            1.0, // wheelEncGearRatio
-            0.0, // treadStaticCoefFric
-            0.0, // treadKineticCoefFric
+            Conversions.falconToMPS(1, DRIVETRAIN.WHEEL_PERIMETER, 6.75), // wheelEncGearRatio
+            1.0, // treadStaticCoefFric
+            1.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
             DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
@@ -127,5 +128,13 @@ public class SwerveSimManager {
 
     public double getAzimuthEncoderPos(int module) {
         return m_modules.get(module).getAzimuthEncoderPositionRev();
+    }
+
+    public QuadSwerveSim getSim() {
+        return m_swerveSim;
+    }
+
+    public void telemetry() {
+        SmartDashboard.putNumber("Module Speed", m_frontLeftSim);
     }
 }

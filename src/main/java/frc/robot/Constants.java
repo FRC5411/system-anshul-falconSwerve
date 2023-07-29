@@ -80,6 +80,6 @@ public final class Constants {
         + 
         (WHEEL_MASS * WHEEL_WIDTH * WHEEL_WIDTH)/12;
 
-        public static final double DRIVE_MOI = 12.517;
+        public static final double DRIVE_MOI = 224;//157769.516708;
 }
 }
