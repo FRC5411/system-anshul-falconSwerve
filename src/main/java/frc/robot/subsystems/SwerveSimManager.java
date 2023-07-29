@@ -48,7 +48,7 @@ public class SwerveSimManager {
             0.0, // treadStaticCoefFric
             0.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
-            0.0 // azimuthEffectiveMOI
+            DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
 
         m_frontRightSim = new SwerveModuleSim(
@@ -62,7 +62,7 @@ public class SwerveSimManager {
             0.0, // treadStaticCoefFric
             0.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
-            0.0 // azimuthEffectiveMOI
+            DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
 
         m_backLeftSim = new SwerveModuleSim(
@@ -76,7 +76,7 @@ public class SwerveSimManager {
             0.0, // treadStaticCoefFric
             0.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
-            0.0 // azimuthEffectiveMOI
+            DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
 
         m_backRightSim = new SwerveModuleSim(
@@ -90,7 +90,7 @@ public class SwerveSimManager {
             0.0, // treadStaticCoefFric
             0.0, // treadKineticCoefFric
             1.0, // moduleNormalForce
-            0.0 // azimuthEffectiveMOI
+            DRIVETRAIN.AZIMUTH_MOI // azimuthEffectiveMOI
         );
         
         m_modules = List.of(m_frontLeftSim, m_frontRightSim, m_backLeftSim, m_backRightSim);
@@ -99,7 +99,7 @@ public class SwerveSimManager {
             DRIVETRAIN.ROBOT_WIDTH,
             DRIVETRAIN.ROBOT_WIDTH,
             125.0,
-            0.0,
+            DRIVETRAIN.DRIVE_MOI,
             m_modules);
 
         this.FL = FL;

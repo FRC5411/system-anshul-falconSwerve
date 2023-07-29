@@ -2,6 +2,8 @@ package frc.robot;
 
 import com.pathplanner.lib.PathConstraints;
 
+import edu.wpi.first.math.util.Units;
+
 public final class Constants {
     public static class DRIVETRAIN {
         // robot width (meters)
@@ -9,6 +11,10 @@ public final class Constants {
         // wheel diameter (meters)
         public static final double WHEEL_DIAMETER = 0.1016;
         public static final double WHEEL_PERIMETER = WHEEL_DIAMETER * Math.PI;
+        public static final double WHEEL_RADIUS = WHEEL_DIAMETER / 2.0;
+        public static final double WHEEL_WIDTH = Units.inchesToMeters(1.5);
+        public static final double WHEEL_MASS = Units.lbsToKilograms(3.0);
+
         // drive gear ratio
         public static final double DRIVE_GEAR_RATIO = 6.75;
 
@@ -68,5 +74,12 @@ public final class Constants {
         public static final double _rotationKd = 0;
 
         public static final PathConstraints alignConstraints = new PathConstraints(2, 1);
+
+        public static final double AZIMUTH_MOI = 
+        (WHEEL_MASS * WHEEL_RADIUS * WHEEL_RADIUS)/4 
+        + 
+        (WHEEL_MASS * WHEEL_WIDTH * WHEEL_WIDTH)/12;
+
+        public static final double DRIVE_MOI = 12.517;
 }
 }
