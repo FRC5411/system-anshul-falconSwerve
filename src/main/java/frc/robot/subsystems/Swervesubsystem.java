@@ -17,7 +17,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -28,7 +27,6 @@ import frc.robot.FalconSwerveModule;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.DRIVETRAIN;
 import frc.robot.Libs.HolonomicDrive;
-import frc.robot.Libs.Limelight;
 import frc.robot.Libs.SwerveUtils;
 
 public class Swervesubsystem extends SubsystemBase {
@@ -68,8 +66,6 @@ public class Swervesubsystem extends SubsystemBase {
   private PIDController tPID;
   private PIDController rPID;
 
-  private Limelight limelight;
-
   public Swervesubsystem() {
       ///////////////// DEVICE INITIALIZATION \\\\\\\\\\\\\\\\\
       LeftFront = new WPI_TalonFX(DRIVETRAIN.FL_DRIVE_ID, "drivetrain");
@@ -89,8 +85,6 @@ public class Swervesubsystem extends SubsystemBase {
 
       gyro = new Pigeon2(DRIVETRAIN.PIGEON_ID, "drivetrain");
       gyro.setYaw(0);
-
-      limelight = new Limelight("limelight", new Pose2d());
 
       TopLeft = new FalconSwerveModule(LeftFront, rLeftFront, 
                 LeftFrontEncoder, DRIVETRAIN.FL_ECODER_OFFSET);
@@ -166,7 +160,7 @@ public class Swervesubsystem extends SubsystemBase {
 
   ////// DRIVE FUNCTIONS \\\\\\\
   public void swerveDrive(double x_speed, double y_speed, double orientation) {
-    swerveDrive.drive(new Translation2d(x_speed, y_speed), orientation, field, false);
+    swerveDrive.drive(new Translation2d(x_speed, y_speed), orientation, true, true);
   }
 
   public void xLock() {
@@ -181,9 +175,9 @@ public class Swervesubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     swerveUtils.updateOdometry();
-    if(limelight.hastarget()) {swerveUtils.addVisionMeasurement(limelight.getPose(), 
-                               Timer.getFPGATimestamp() - limelight.getLatency());}
-    limelight.periodic();
+    // if(limelight.hastarget()) {swerveUtils.addVisionMeasurement(limelight.getPose(), 
+    //                            Timer.getFPGATimestamp() - limelight.getLatency());}
+    // limelight.periodic();
 
     for(int i = 0; i <= modules.length - 1; i++) {
       modules[i].setTelemetry(i);

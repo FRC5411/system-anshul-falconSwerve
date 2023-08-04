@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Libs.CTRESwerveConfigs;
 import frc.robot.Libs.Conversions;
@@ -24,6 +25,8 @@ public class FalconSwerveModule implements SwerveModuleInterface {
         rot_encoder = encoder;
 
         lastAngle = new Rotation2d();
+
+        Timer.delay(1);
 
         CTRESwerveConfigs.configDrive(m_speed);
         CTRESwerveConfigs.configPosition(rot_encoder, offset);
@@ -60,12 +63,12 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     public void setAngleDegrees(SwerveModuleState state) {
         //This line of code controls whether the swerve wheels go back 
         //into their starting position when the joystick are not being used, made by 364
-        Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
-        double angleDegrees = angle.getDegrees();
+        // Rotation2d angle = (Math.abs(state.speedMetersPerSecond) <= (DRIVETRAIN.MAX_LINEAR_SPEED * 0.01)) ? lastAngle : state.angle;
+        double angleDegrees = state.angle.getDegrees();
 
         setDegrees(angleDegrees);
 
-        lastAngle = angle;
+        lastAngle = state.angle;
     }
 
     @Override
@@ -75,21 +78,13 @@ public class FalconSwerveModule implements SwerveModuleInterface {
 
     @Override
     public double getDriveMeters() {
-        return
-            DRIVETRAIN.WHEEL_PERIMETER
-            *
-            (m_speed.getSelectedSensorPosition()/2048)
-            / 
-            DRIVETRAIN.DRIVE_GEAR_RATIO;
+        return Conversions.falconToMeters(
+            m_speed.getSelectedSensorPosition(), DRIVETRAIN.WHEEL_PERIMETER, DRIVETRAIN.DRIVE_GEAR_RATIO);
     }
 
     public double getDriveVelocity() {
-        return 
-            DRIVETRAIN.WHEEL_PERIMETER
-            *
-            (m_speed.getSelectedSensorVelocity()/2048)
-            /
-            DRIVETRAIN.DRIVE_GEAR_RATIO;
+        return Conversions.falconToMPS(
+            m_speed.getSelectedSensorVelocity(), DRIVETRAIN.WHEEL_PERIMETER, DRIVETRAIN.DRIVE_GEAR_RATIO);
     }
 
     @Override
@@ -100,15 +95,7 @@ public class FalconSwerveModule implements SwerveModuleInterface {
     @Override
     public Rotation2d getAngleRads() {
         return 
-        new Rotation2d(
-            getEncoder().getAbsolutePosition() 
-            * 
-            (
-            (2 * Math.PI) 
-            / 
-            (DRIVETRAIN.DRIVE_GEAR_RATIO * 4096)
-            )
-        );
+        new Rotation2d(Math.toRadians(getEncoder().getAbsolutePosition()));
     }
 
     @Override

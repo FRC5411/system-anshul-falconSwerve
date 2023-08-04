@@ -5,7 +5,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HolonomicDrive {
     private Pigeon2 gyro;
@@ -50,8 +49,6 @@ public class HolonomicDrive {
 
         // Debug info on the module goals in speed and degrees(Not optimized)
         for(int i = 0; i <= modules.length - 1; i++) {
-            SmartDashboard.putNumber("Module " + i + " Angle", swerveModuleStates[i].angle.getDegrees());
-            SmartDashboard.putNumber("Module " + i + " Speed", swerveModuleStates[i].speedMetersPerSecond);
             modules[i].setDesiredState(swerveModuleStates[i], isOpenLoop);
         }
     }    
@@ -60,7 +57,7 @@ public class HolonomicDrive {
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, maxSpeed);
         
-        for(int i = 0; i < modules.length - 1; i++) {
+        for(int i = 0; i < modules.length; i++) {
             modules[i].setDesiredState(desiredStates[i], false);
         }
     }

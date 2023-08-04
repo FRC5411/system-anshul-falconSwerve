@@ -17,8 +17,8 @@ public class RobotContainer {
     m_SwerveSubsystem = new Swervesubsystem();
 
     m_SwerveSubsystem.setDefaultCommand(new SwerveCommand(
-      () -> -m_controller.getLeftY() * DRIVETRAIN.MAX_LINEAR_SPEED, 
-      () -> m_controller.getLeftX() * DRIVETRAIN.MAX_LINEAR_SPEED, 
+      () -> 1 * -m_controller.getLeftY() * DRIVETRAIN.MAX_LINEAR_SPEED, 
+      () -> 1 * m_controller.getLeftX() * DRIVETRAIN.MAX_LINEAR_SPEED, 
       () -> m_controller.getRightX() * DRIVETRAIN.MAX_ROTATION_SPEED, 
       m_SwerveSubsystem
       ));
@@ -42,5 +42,12 @@ public class RobotContainer {
 
     // What to do for testing
     return DriverStation.Alliance.Red;
+  }
+
+  public double deadzone(double val) {
+    if(Math.abs(val) <= 0.1) {
+      return 0;
+    }
+    return val;
   }
 }
