@@ -2,7 +2,6 @@ package frc.robot.subsystems;
 import java.util.List;
 import java.util.function.DoubleSupplier;
 import edu.wpi.first.math.system.plant.DCMotor;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.DRIVETRAIN;
 import frc.robot.Libs.Conversions;
 import frc.robot.subsystems.SwerveSim.QuadSwerveSim;
@@ -135,6 +134,5 @@ public class SwerveSimManager {
     }
 
     public void telemetry() {
-        SmartDashboard.putNumber("Module Speed", m_frontLeftSim);
     }
 }

@@ -6,7 +6,6 @@ import edu.wpi.first.math.util.Units;
 // This file get passed into "SwerveModuleSim.java" along with "SimpleMotorWithMassModel.java"
 
 class MotorGearboxWheelSim {
- 
     DCMotor m_motor;
     double m_gearRatio;
     double m_wheelRadiusM;
@@ -32,9 +31,9 @@ class MotorGearboxWheelSim {
      *      with white lithium grease, make it positive if your team maybe
      *      forget the grease sometimes.
      */
-    MotorGearboxWheelSim(DCMotor motor, 
-                         double gearRatio, 
-                         double wheelRadiusM, 
+    MotorGearboxWheelSim(DCMotor motor,
+                         double gearRatio,
+                         double wheelRadiusM,
                          double gearboxFricCoefNmPerRadPerSec) {
         this.m_motor = motor;
         this.m_gearRatio = gearRatio;
